@@ -19,7 +19,10 @@
   "homepage": "https://github.com/Jamesbillard12/donnytrumpfish#readme",
   "dependencies": {
     "dotenv": "^6.1.0",
+    "nodejs-nodemailer-outlook": "^1.0.8",
+    "rpio": "^0.9.23",
     "say": "^0.15.0",
+    "text2wav": "0.0.10",
     "twit": "^2.2.11"
   }
 }
