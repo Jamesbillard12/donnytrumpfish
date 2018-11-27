@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/Jamesbillard12/donnytrumpfish#readme",
   "dependencies": {
+    "audio-loader": "^1.0.3",
+    "audio-play": "^2.2.1",
     "dotenv": "^6.1.0",
     "nodejs-nodemailer-outlook": "^1.0.8",
     "rpio": "^0.9.23",
