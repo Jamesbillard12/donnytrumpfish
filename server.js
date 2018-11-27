@@ -28,10 +28,10 @@ function playsound(soundfile) {
     function(error, stdout, stderr) {
       if (error !== null) {
         console.log("exec error: " + error);
-      } else {
-        //console.log(" finshed ");
-        //micInstance.resume();
       }
+      fs.unlink("./bb.mp3", () => {
+        console.log("TWEET_AUDIO_FILE_DELETED");
+      });
     }
   );
 }
@@ -81,6 +81,7 @@ function findPeaks(pcmdata, samplerate) {
 
 function decodeSoundFile(soundfile) {
   console.log("decoding mp3 file ", soundfile, " ..... ");
+
   fs.readFile(soundfile, function(err, buf) {
     if (err) throw err;
     context.decodeAudioData(
@@ -96,7 +97,7 @@ function decodeSoundFile(soundfile) {
         samplerate = audioBuffer.sampleRate; // store sample rate
         maxvals = [];
         max = 0;
-        playsound(soundfile);
+
         findPeaks(pcmdata, samplerate);
       },
       function(err) {
@@ -106,55 +107,48 @@ function decodeSoundFile(soundfile) {
   });
 }
 
-// setInterval(() => {
-T.get(
-  "statuses/user_timeline",
-  { screen_name: "realDonaldTrump", count: 1, tweet_mode: "extended" },
-  function(err, data, response) {
-    count++;
-    console.log(count);
-    if (err) console.log(err);
-    if (prevTweet !== data[0].full_text) {
-      console.log("NEW_TWEET");
-      console.log(data[0].full_text);
-      prevTweet = data[0].full_text;
-      (async () => {
-        const text2wav = require("text2wav");
-        let out = await text2wav(data[0].full_text, {
-          voice: "am+Andy",
-          speed: "90",
-          pitch: 50,
-          noFinalPause: "true"
-        });
-        fs.appendFile("bb.mp3", new Buffer(out), function(err) {
-          // load("./bb.mp3").then(buffer => {
-          //   console.log("PLAYING_TWEET");
-          //   play(buffer, () => {
-          //     console.log("TWEET_PLAYED");
-          //   });
-          // });
-          decodeSoundFile("bb.mp3");
-
-          //   fs.unlink("./bb.mp3", () => {
-          //     console.log("TWEET_AUDIO_FILE_DELETED");
-          //   });
-        });
-      })();
-      // nodeoutlook.sendEmail({
-      //   auth: {
-      //     user: process.env.EMAIL,
-      //     pass: process.env.PASSWORD
-      //   },
-      //   from: process.env.EMAIL,
-      //   to: process.env.EMAIL,
-      //   subject: "New Trump Tweet!",
-      //   text: data[0].full_text
-      // });
-    } else {
-      console.log("NO NEW TWEET");
+setInterval(() => {
+  T.get(
+    "statuses/user_timeline",
+    { screen_name: "realDonaldTrump", count: 1, tweet_mode: "extended" },
+    function(err, data, response) {
+      count++;
+      console.log(count);
+      if (err) console.log(err);
+      if (prevTweet !== data[0].full_text) {
+        console.log("NEW_TWEET");
+        console.log(data[0].full_text);
+        prevTweet = data[0].full_text;
+        (async () => {
+          const text2wav = require("text2wav");
+          let out = await text2wav(data[0].full_text, {
+            voice: "am+Andy",
+            speed: "90",
+            pitch: 50,
+            noFinalPause: "true"
+          });
+          fs.appendFile("bb.mp3", new Buffer(out), function(err) {
+            playsound("bb.mp3");
+            setTimeout(() => {
+              decodeSoundFile("bb.mp3");
+            }, 1500);
+          });
+        })();
+        // nodeoutlook.sendEmail({
+        //   auth: {
+        //     user: process.env.EMAIL,
+        //     pass: process.env.PASSWORD
+        //   },
+        //   from: process.env.EMAIL,
+        //   to: process.env.EMAIL,
+        //   subject: "New Trump Tweet!",
+        //   text: data[0].full_text
+        // });
+      } else {
+        console.log("NO NEW TWEET");
+      }
     }
-  }
-);
-// }, 60000);
+  );
+}, 60000);
 
 console.log("DONNY_TRUMP_FISH_RUNNING");
